@@ -19,6 +19,21 @@ typedef struct
 	unsigned char a;
 } Pixel;
 
+/** A struct for storing pixel information without alpha channel*/
+typedef struct
+{
+	/** The red channel of the image*/
+	unsigned char r;
+
+	/** The green channel of the image*/
+	unsigned char g;
+
+	/** The blue channel of the image*/
+	unsigned char b;
+
+} NonAlphaPixel;
+
+
 /** A struct for storing an image*/
 typedef struct
 {
