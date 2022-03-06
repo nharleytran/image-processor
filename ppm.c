@@ -139,6 +139,30 @@ Image *ReadPPM( FILE *fp )
 */
 int WritePPM( FILE *fp , const Image *img )
 {
-	// TODO: IMPLEMENT THIS FUNCTION
+	if (!fp){
+		return -1;
+	}
+
+	assert( fp!=NULL );
+
+	fprintf(fp,"P6\n");
+
+	fprintf(fp,"%d %d\n", img->width, img->height);	
+
+	fprintf(fp,"255\n");
+
+
+	for (int i = 0; i < img->height * img->width; i++) {
+			NonAlphaPixel *non_alpha_pixels;
+			non_alpha_pixels = malloc((img->width * img->height) * sizeof(NonAlphaPixel));
+			non_alpha_pixels->r = (img->pixels+i)->r;
+			non_alpha_pixels->g = (img->pixels+i)->g;
+			non_alpha_pixels->b = (img->pixels+i)->b;
+
+			fwrite(non_alpha_pixels , sizeof(unsigned char) , 3 , fp );
+			free(non_alpha_pixels);
+	}
+	return img->width * img->height;
+}
 	return -1;
 }
