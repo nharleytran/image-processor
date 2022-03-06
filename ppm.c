@@ -152,7 +152,7 @@ int WritePPM( FILE *fp , const Image *img )
 	fprintf(fp,"255\n");
 
 
-	for (int i = 0; i < img->height * img->width; i++) {
+	for (unsigned int i = 0; i < img->height * img->width; i++) {
 			NonAlphaPixel *non_alpha_pixels;
 			non_alpha_pixels = malloc((img->width * img->height) * sizeof(NonAlphaPixel));
 			non_alpha_pixels->r = (img->pixels+i)->r;
@@ -164,5 +164,5 @@ int WritePPM( FILE *fp , const Image *img )
 	}
 	return img->width * img->height;
 }
-	return -1;
-}
+	
+
