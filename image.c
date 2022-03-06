@@ -39,11 +39,26 @@ const Pixel *GetConstPixel( const Image *image , PixelIndex idx )
 
 Image *AllocateImage( unsigned int width , unsigned int height )
 {
-	// TODO: IMPLEMENT THIS FUNCTION
-	return NULL;
+  Image *image = malloc(sizeof(Image));
+  if (*image == NULL) { // error check for unsuccessful memory allocation
+    return NULL;
+  }
+  
+  image.width = width;
+  image.height = height;
+
+  Pixel *pixels = malloc(width * height * 4 * sizeof(unsigned int)); 
+  if (*pixels == NULL) { // error check for unsuccessful memory allocation
+    return NULL;
+  }
+  
+  image.pixels = pixels;
+
+  return image;
 }
 
 void FreeImage( Image **image )
 {
-	// TODO: IMPLEMENT THIS FUNCTION
+  free(image);
+  *image = NULL;
 }
