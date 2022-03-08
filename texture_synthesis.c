@@ -50,10 +50,25 @@ int SortTBSPixels( TBSPixel *tbsPixels , unsigned int sz )
 }
 
 
+int * find_unset(const Image *img, int width, int height){
+	
+	int *unset_list = malloc((height * width - img->height * img->width) * sizeof(int));
+	
+	unsigned int j = 0;
+	
+	for (unsigned int i = 0; i < height * width; i++) {
+		if ((img->pixels+i).a ==0) {
+			unset_list[j] = i;	
+			j++;
+		}
+
+}
+
 Image *SynthesizeFromExemplar( const Image *exemplar , unsigned int outWidth , unsigned int outHeight , unsigned int windowRadius , bool verbose )
 {
 	Image *synthesized = NULL;
 
 	// TODO: IMPLEMENT THIS FUNCTION
+
 	return synthesized;
 }
