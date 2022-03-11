@@ -50,17 +50,217 @@ int SortTBSPixels( TBSPixel *tbsPixels , unsigned int sz )
 }
 
 
-int * find_unset(const Image *img, int width, int height){
+int * find_unset(const Image *img, int width, int height) {
 	
 	int *unset_list = malloc((height * width - img->height * img->width) * sizeof(int));
 	
 	unsigned int j = 0;
 	
 	for (unsigned int i = 0; i < height * width; i++) {
-		if ((img->pixels+i).a ==0) {
+		if (((img->pixels)+i).a == 0) {
 			unset_list[j] = i;	
 			j++;
 		}
+
+	return unset_list;
+
+}
+
+TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_list) {
+    
+	int i = 0;
+	int j = 0;
+
+	TBSPixel * TBSPixels = (int *) calloc(sizeof(TBSPixel));
+
+	while (*(unset_list+i) != NULL) {
+
+		Int pos = *(unset_list+i);
+		int alpha_counter = 0;
+
+		// case 1: on corner
+
+		if (pos == 0) {
+		
+			if (img->pixels[pos + 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width + 1].a != 0) {
+				alpha_counter++;
+			}
+
+		}
+
+		else if (pos == width * (height-1)) {
+
+			if (img->pixels[pos + 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos - width].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos - width + 1].a != 0) {
+				alpha_counter++;
+			}
+
+		}
+
+		else if (pos == width - 1) {
+
+			if (img->pixels[pos - 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width - 1].a != 0) {
+				alpha_counter++;
+			}
+
+		}
+
+		else if (pos == (width * height) - 1) {
+
+			if (img->pixels[pos - 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos - width].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos - width - 1].a != 0) {
+				alpha_counter++;
+			}
+
+		}
+
+
+		// case 2: on edge but not corner
+		else if (pos < width) {
+
+			if (img->pixels[pos - 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width - 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width + 1].a != 0) {
+				alpha_counter++;
+			}
+
+		}
+	
+		else if (pos > width * (height - 1)) {
+
+			if (img->pixels[pos - 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos - width - 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos - width].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos - width + 1].a != 0) {
+				alpha_counter++;
+			}
+
+		}
+
+		else if (pos % width == 0) {
+
+			if (img->pixels[pos - width].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos - width + 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width + 1].a != 0) {
+				alpha_counter++;
+			}
+
+		}
+
+		else if ((pos % width) - (width - 1) == 0) {
+
+			if (img->pixels[pos - width].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos - width - 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos - 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width - 1].a != 0) {
+				alpha_counter++;
+			}
+
+		}
+
+		// case 3: all other pixels
+		else {
+
+			if (img->pixels[pos - 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width - 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos + width + 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos - width - 1].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos - width].a != 0) {
+				alpha_counter++;
+			}
+			if (img->pixels[pos - width + 1].a != 0) {
+				alpha_counter++;
+			}
+
+		}
+
+		// if alpha counter > 0, create TBS pixel
+		if (alpha_counter > 0) {
+		
+			TBSPixel temp = { {pos % width, idx.y = pos / width} , alpha_counter, 0}; 
+			*(TBSPixels + j) = temp;
+			j++;
+			realloc(TBSPixels, sizeof(TBSPixel));
+		}
+
+    	i++;
+	}
+
+	return TBSPixels;
 
 }
 
