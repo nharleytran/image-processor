@@ -65,7 +65,7 @@ int * find_unset(const Image *img, int width, int height) {
 	return unset_list;
 
 }
-
+//Determines if the unset pixel has any neighbord 
 TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_list) {
     
 	int i = 0;
@@ -269,6 +269,62 @@ Image *SynthesizeFromExemplar( const Image *exemplar , unsigned int outWidth , u
 	Image *synthesized = NULL;
 
 	// TODO: IMPLEMENT THIS FUNCTION
+	while Image not filled do
+    progress = 0
+    PixelList = GetUnfilledNeighbors(Image)
+    foreach Pixel in PixelList do
+      Template = GetNeighborhoodWindow(Pixel)
+      BestMatches = FindMatches(Template, SampleImage)
+      BestMatch = RandomPick(BestMatches)
+      if (BestMatch.error < MaxErrThreshold) then
+        Pixel.value = BestMatch.value
+        progress = 1
+      end
+    end
+    if progress == 0 
+      then MaxErrThreshold = MaxErrThreshold * 1.1
+  end
+  return Image
 
 	return synthesized;
 }
+
+function FindMatches(Template,SampleImage)
+{
+	function FindMatches(Template,SampleImage)
+  ValidMask = 1s where Template is filled, 0s otherwise
+  GaussMask = Gaussian2D(WindowSize,Sigma)
+  TotWeight = sum i,j GaussiMask(i,j)*ValidMask(i,j)
+  for i,j do
+    for ii,jj do
+      dist = (Template(ii,jj)-SampleImage(i-ii,j-jj))^2
+      SSD(i,j) = SSD(i,j) + dist*ValidMask(ii,jj)*GaussMask(ii,jj)
+    end
+    SSD(i,j) = SSD(i,j) / TotWeight
+  end
+  PixelList = all pixels (i,j) where SSD(i,j) <= min(SSD)*(1+ErrThreshold)
+  return PixelList
+end
+}
+
+GetUnfilledNeighbors() //returns a list of all unfilled pixels that have filled pixels as their neighbors //create_TBSPixels
+GetNeigborhoodWindow() //returns a window of size WindowSize around a given pixel 
+
+int * GetNeigborhoodWindow(const Image *img, int width=5, int height=5,int x,int y) {
+	
+	int *neigborhood_list = malloc((height * width * sizeof(int));
+	
+	unsigned int j = 0;
+	
+	for (unsigned int i = x; i < height * width; i++) {
+		if (((img->pixels)+i).a == 0) {
+			unset_list[j] = i;	
+			j++;
+		}
+
+	return unset_list;
+
+}
+
+RandomPick() //picks an element randomly from the list. // 
+Gaussian2D()// generates a two-dimensional Gaussian in a window of given a size centered in the center and with a given standard deviation 
