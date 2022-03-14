@@ -308,9 +308,10 @@ function FindMatches(Template,SampleImage)
 end
 }
 
-float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX, int width, int height) {
+float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX, int width, int height, int r) {
 
 	float diff = 0.0;
+	float sigma = ((2*r)+1)/6.4;
 
 	for (int col = - r; col < r + 1; col++) {
 		for (int row = - r; row <  r + 1; row++) {
@@ -322,10 +323,9 @@ float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX,
 				// check if pixel within exemplar pixel window is within image
 				if (colX + col >= 0 && colX + col < width && rowX + row >= 0 &&  rowX + row < height) {
 					
-					// TODO: calculate s
 					float d = PixelSquaredDifference(img->pixels[(width * (rowS + row)) + (colS + col)], 
 									img->pixels[((width * (rowS + row)) + (colS + col))]);
-					float s = (gaussian evaluation);
+					float s = exp(-(col*col+row*row)/(2*sigma*sigma));
 					diff += d * s;
 
 				}
@@ -335,9 +335,7 @@ float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX,
 	return sum;
 }
 
-GetUnfilledNeighbors() //returns a list of all unfilled pixels that have filled pixels as their neighbors //create_TBSPixels
-GetNeigborhoodWindow() //returns a window of size WindowSize around a given pixel 
-
+//returns a window of size WindowSize around a given pixel 
 int * GetNeigborhoodWindow(const Image *img, int w_width=5, int w_height=5, int width, int height,int pixel_index_x,int pixel_index_y) {
 	
 	int *neigborhood_list = malloc((w_height * w_width * sizeof(int));
@@ -362,7 +360,7 @@ int RandomPick(int length) {
 
 // generates a two-dimensional Gaussian in a window of given a 
 // size centered in the center and with a given standard deviation 
-float * Gaussian2D(int r, float sigma) {
+/* float * Gaussian2D(int r, float sigma) {
 
 	float * Gauss_window = calloc( ((2 * r) + 1) * ((2 * r) + 1) * sizeof(float) );
 
@@ -380,3 +378,4 @@ float * Gaussian2D(int r, float sigma) {
 	return Gauss_window;
 
 }
+*/
