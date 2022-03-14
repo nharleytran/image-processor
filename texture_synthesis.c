@@ -65,7 +65,9 @@ int * find_unset(const Image *img, int width, int height) {
 	return unset_list;
 
 }
-//Determines if the unset pixel has any neighbord 
+
+// Determines if the unset pixel has any set neighbors. 
+// If so, creates a TBSPixel object for that pixel.
 TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_list) {
     
 	int i = 0;
@@ -310,7 +312,7 @@ end
 GetUnfilledNeighbors() //returns a list of all unfilled pixels that have filled pixels as their neighbors //create_TBSPixels
 GetNeigborhoodWindow() //returns a window of size WindowSize around a given pixel 
 
-int * GetNeigborhoodWindow(const Image *img, int width=5, int height=5,int x,int y) {
+int * GetNeigborhoodWindow(const Image *img, int width=5, int height=5, int x, int y) {
 	
 	int *neigborhood_list = malloc((height * width * sizeof(int));
 	
@@ -326,5 +328,30 @@ int * GetNeigborhoodWindow(const Image *img, int width=5, int height=5,int x,int
 
 }
 
-RandomPick() //picks an element randomly from the list. // 
-Gaussian2D()// generates a two-dimensional Gaussian in a window of given a size centered in the center and with a given standard deviation 
+// randomly picks an element from a list
+int RandomPick(int length) {
+
+	return rand() % length;
+
+}
+
+// generates a two-dimensional Gaussian in a window of given a 
+// size centered in the center and with a given standard deviation 
+float * Gaussian2D(int r, float sigma) {
+
+	float * Gauss_window = calloc( ((2 * r) + 1) * ((2 * r) + 1) * sizeof(float) );
+
+	int counter = 0;
+
+	for (int row = -r; row < r + 1; row++) {
+		for (int col = -r; col < r + 1; col++) {
+
+			*(Gauss_window + counter) = exp(-(col*col+row*row)/(2*sigma*sigma));
+			counter++;
+
+		}
+	}
+
+	return Gauss_window;
+
+}
