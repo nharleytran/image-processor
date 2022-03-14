@@ -312,19 +312,18 @@ end
 GetUnfilledNeighbors() //returns a list of all unfilled pixels that have filled pixels as their neighbors //create_TBSPixels
 GetNeigborhoodWindow() //returns a window of size WindowSize around a given pixel 
 
-int * GetNeigborhoodWindow(const Image *img, int width=5, int height=5, int x, int y) {
+int * GetNeigborhoodWindow(const Image *img, int w_width=5, int w_height=5, int width, int height,int pixel_index) {
 	
-	int *neigborhood_list = malloc((height * width * sizeof(int));
+	int *neigborhood_list = malloc((w_height * w_width * sizeof(int));
 	
-	unsigned int j = 0;
-	
-	for (unsigned int i = x; i < height * width; i++) {
-		if (((img->pixels)+i).a == 0) {
-			unset_list[j] = i;	
-			j++;
+	for(int j = 0 ; j< 5; j++)
+	{
+		for (int i = -2; i < 3; i++) {
+			neigborhood_list[i+2] = ((img->pixels)+(pixel_index+(j*width))+i).a;
 		}
 
-	return unset_list;
+	}
+	return neigborhood_list;
 
 }
 
