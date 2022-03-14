@@ -309,6 +309,33 @@ function FindMatches(Template,SampleImage)
 end
 }
 
+float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX, int width, int height) {
+
+	float diff = 0.0;
+
+	for (int col = - r; col < r + 1; col++) {
+		for (int row = - r; row <  r + 1; row++) {
+	
+			// check if pixel within TBSPixel window is within the image and set
+			if (colS + col >= 0 && colS + col < width && rowS + row >= 0 && rowS + row < height && 
+							img->pixels[(width * (rowS + row)) + (colS + col)].a != 0) {
+
+				// check if pixel within exemplar pixel window is within image
+				if (colX + col >= 0 && colX + col < width && rowX + row >= 0 &&  rowX + row < height) {
+					
+					// TODO: calculate s
+					float d = PixelSquaredDifference(img->pixels[(width * (rowS + row)) + (colS + col)], 
+									img->pixels[((width * (rowS + row)) + (colS + col))]);
+					float s = (gaussian evaluation);
+					diff += d * s;
+
+				}
+			}
+		}
+	}
+	return sum;
+}
+
 GetUnfilledNeighbors() //returns a list of all unfilled pixels that have filled pixels as their neighbors //create_TBSPixels
 GetNeigborhoodWindow() //returns a window of size WindowSize around a given pixel 
 
