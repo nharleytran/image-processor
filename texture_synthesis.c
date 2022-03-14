@@ -358,6 +358,25 @@ int RandomPick(int length) {
 
 }
 
+int desc_sort(float *a)
+{
+ size_t n = sizeof(a) / sizeof(float);
+ int i, j, temp;
+ for(i=0;i< n-1;i++)
+ {
+  for(j=i+1;j< n;j++)
+  {
+   if(a[i]< a[j])
+   {
+    temp = a[i];
+    a[i] = a[j];
+    a[j] = temp;
+   }
+  }
+ }
+ return a[0];
+}
+
 // generates a two-dimensional Gaussian in a window of given a 
 // size centered in the center and with a given standard deviation 
 /* float * Gaussian2D(int r, float sigma) {
