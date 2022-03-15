@@ -22,7 +22,7 @@ int main( int argc , char *argv[] )
 	int outHeight = argv[4];
 	int windowRadius= argv[5];
 
-	Image* synimg=SynthesizeFromExemplar( img, outWidth , outHeight , windowRadius);
+	Image* synimg = SynthesizeFromExemplar( img, outWidth , outHeight , windowRadius);
 
 	fclose(in);
      FILE *out = fopen(argv[2],"wb");
