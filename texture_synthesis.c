@@ -57,9 +57,12 @@ int * find_unset(const Image *img, int width, int height) {
 	unsigned int j = 0;
 	
 	for (unsigned int i = 0; i < height * width; i++) {
-		if (((img->pixels)+i).a == 0) {
+		if (img->pixels[i].a == 0) {
 			unset_list[j] = i;	
 			j++;
+		}
+		else{
+			unset_list = NULL;
 		}
 
 	return unset_list;
@@ -253,7 +256,7 @@ TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_
 		// if alpha counter > 0, create TBS pixel
 		if (alpha_counter > 0) {
 		
-			TBSPixel temp = { {pos % width, idx.y = pos / width} , alpha_counter, 0}; 
+			TBSPixel temp = { {pos % width, pos / width} , alpha_counter, 0}; 
 			*(TBSPixels + j) = temp;
 			j++;
 			realloc(TBSPixels, sizeof(TBSPixel));
@@ -266,48 +269,42 @@ TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_
 
 }
 
-Image *SynthesizeFromExemplar( const Image *exemplar , unsigned int outWidth , unsigned int outHeight , unsigned int windowRadius , bool verbose )
+Image *SynthesizeFromExemplar( const Image *exemplar , unsigned int outWidth , unsigned int outHeight , unsigned int windowRadius , bool flag )
 {
-	Image *synthesized = NULL;
+	Image* synimg = NULL;
+	flag = FALSE;
+    synimg = AllocateImage( outWidth , outHeight);
 
-	// TODO: IMPLEMENT THIS FUNCTION
-	while Image not filled do
-    progress = 0
-    PixelList = GetUnfilledNeighbors(Image)
-    foreach Pixel in PixelList do
-      Template = GetNeighborhoodWindow(Pixel)
-      BestMatches = FindMatches(Template, SampleImage)
-      BestMatch = RandomPick(BestMatches)
-      if (BestMatch.error < MaxErrThreshold) then
-        Pixel.value = BestMatch.value
-        progress = 1
-      end
-    end
-    if progress == 0 
-      then MaxErrThreshold = MaxErrThreshold * 1.1
-  end
-  return Image
+	while (flag == FALSE)
+	{
+	  for( unsigned int i=0 ; i<(unsigned int)(img->width) ; i++ )
+	{
+        for( unsigned int j=0 ; j<(unsigned int)(img->height) ; j++ ){
 
-	return synthesized;
+        synimg->pixels[i*synimg->width + j].r = img->pixels[i*img->width + j].r;
+        synimg->pixels[i*synimg->width + j].b = img->pixels[i*img->width + j].b;
+        synimg->pixels[i*synimg->width + j].g = img->pixels[i*img->width + j].g;
+        synimg->pixels[i*synimg->width + j].a = img->pixels[i*img->width + j].a;
+	}        
+    }
+	 TBSPixel *TBSPixel_list = create_TBSPixels(exemplar, outWidth, outHeight, find_unset(synimg, Outwidth, Outheight);
+	 int error = SortTBSPixels(TBSPixel_list,(sizeof(TBSPixel_list))/sizeof(TBSPixel));
+	 assign_match(examplar, synimg, (*TBSPixel_list).idx.x,(*TBSPixel_list).idx.y , int windowsRadius) ;
+	 flag = are_you_fill(synimg);9
+	}
+	
+{
+
 }
 
-function FindMatches(Template,SampleImage)
+bool are_you_fill(Image *synimg, int * unset )
 {
-  ValidMask = 1s where Template is filled, 0s otherwise
-  GaussMask = Gaussian2D(WindowSize,Sigma)
-  TotWeight = sum i,j GaussiMask(i,j)*ValidMask(i,j)
-  for i,j do
-    for ii,jj do
-      dist = (Template(ii,jj)-SampleImage(i-ii,j-jj))^2
-      SSD(i,j) = SSD(i,j) + dist*ValidMask(ii,jj)*GaussMask(ii,jj)
-    end
-    SSD(i,j) = SSD(i,j) / TotWeight
-  end
-  PixelList = all pixels (i,j) where SSD(i,j) <= min(SSD)*(1+ErrThreshold)
-  return PixelList
-end
+		if (unset== NULL) {
+			bool flag = TRUE; 
+	    else 
+			flag = FALSE; 
+			
 }
-
 void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) {
 
 	float * sum_array = calloc(img->width * img->height * sizeof(float));
