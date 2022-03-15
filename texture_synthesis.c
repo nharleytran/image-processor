@@ -341,9 +341,10 @@ void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) 
 
 	int chosen_position = RandomPick(a);
 
-	// TODO: assign TBS pixel with rgb values
-	return; // replace stub
-
+	synimg->pixels[colS+rowS*synimg->width].r = img->pixels[chosen_position].r;
+	synimg->pixels[colS+rowS*synimg->width].g = img->pixels[chosen_position].g;
+	synimg->pixels[colS+rowS*synimg->width].b = img->pixels[chosen_position].b;
+	synimg->pixels[colS+rowS*synimg->width].a = img->pixels[chosen_position].a;
 }
 
 float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX, int width, int height, int r) {
