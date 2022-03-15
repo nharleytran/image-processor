@@ -388,10 +388,7 @@ bool are_you_fill(Image *synimg, int * unset ){
 			return flag = false; 
 }
 
-
-
-
-Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHeight , int windowRadius  )
+Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHeight , int windowRadius)
 {
 	Image* synimg = NULL;
 	bool flag = false;

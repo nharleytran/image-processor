@@ -7,6 +7,11 @@
         "unordered_map": "c",
         "vector": "c",
         "string_view": "c",
-        "initializer_list": "c"
+        "initializer_list": "c",
+        "texture_synthesis.h": "c",
+        "image.h": "c",
+        "stdbool.h": "c",
+        "stdio.h": "c",
+        "ppm.h": "c"
     }
 }

@@ -6,6 +6,8 @@
 #include "image.h"
 #include "ppm.h"
 #include "texture_synthesis.h"
+#include <string.h>
+
 
 int main( int argc , char *argv[] )
 {
@@ -18,9 +20,9 @@ int main( int argc , char *argv[] )
 	// TODO: IMPLEMENT THIS FUNCTION
 	FILE *in = fopen(argv[1],"rb");
     const Image* img = ReadPPM(in);
-	int outWidth = argv[3];
-	int outHeight = argv[4];
-	int windowRadius= argv[5];
+	int outWidth = atoi(argv[3]);
+	int outHeight = atoi(argv[4]);
+	int windowRadius= atoi(argv[5]);
 
 	Image* synimg = SynthesizeFromExemplar( img, outWidth , outHeight , windowRadius);
 

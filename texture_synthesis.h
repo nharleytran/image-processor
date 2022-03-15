@@ -1,6 +1,8 @@
 #ifndef TEXTURE_SYNTHESIS_INCLUDED
 #define TEXTURE_SYNTHESIS_INCLUDED
 #include "image.h"
+#include "texture_synthesis.c"
+
 
 /** A struct storing information about a to-be-synthesized pixel*/
 typedef struct
