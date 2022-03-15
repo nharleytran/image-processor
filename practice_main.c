@@ -13,12 +13,31 @@ int main(void)
     
     const Image* img = ReadPPM(in);
 
+    Image* synimg = NULL;
+    synimg = AllocateImage( 128 , 128 );
+
+    for( unsigned int i=0 ; i<(unsigned int)(img->width) ; i++ )
+	{
+        for( unsigned int j=0 ; j<(unsigned int)(img->height) ; j++ ){
+
+        synimg->pixels[i*synimg->width + j].r = img->pixels[i*img->width + j].r;
+        synimg->pixels[i*synimg->width + j].b = img->pixels[i*img->width + j].b;
+        synimg->pixels[i*synimg->width + j].g = img->pixels[i*img->width + j].g;
+        synimg->pixels[i*synimg->width + j].a = img->pixels[i*img->width + j].a;
+	}        
+    }
+
+    int * unset = find_unset(synimg, synimg->width , synimg->height);
+    unsigned int size = sizeof *unset/ sizeof unset[0];
+    for( unsigned int i=0 ; i< size; i++ ){
+        printf("%d ",unset[i]);
+     }
+
     fclose(in);
     
-    FILE *out = fopen("test.txt","wb");
-    WritePPM(out,img);
-    fclose(out);
+     FILE *out = fopen("test1.ppm","wb");
+     WritePPM(out,synimg);
+     fclose(out);
 
 
 }
-
