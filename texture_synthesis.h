@@ -21,14 +21,15 @@ int CompareTBSPixels( const void *v1 , const void *v2 );
 /** A function that sorts an array of TBSPixels*/
 int SortTBSPixels( TBSPixel *tbsPixels , unsigned int sz );
 
-// Find all unset pixels, which have alpha channel = 0
-int * find_unset(const Image *img, int width, int height);
+// // Find all unset pixels, which have alpha channel = 0
+// int * find_unset(const Image *img, int width, int height);
 
-// Determines if the unset pixel has any set neighbors. 
-// If so, creates a TBSPixel object for that pixel.
-TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_list);
+// // Determines if the unset pixel has any set neighbors. 
+// // If so, creates a TBSPixel object for that pixel.
+// TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_list);
+
 
 /** A function that extends the exemplar into an image with the specified dimensions, using the prescribed window radius -- the verbose argument is passed in to enable logging to the command prompt, if desired*/
-Image *SynthesizeFromExemplar( const Image *exemplar , unsigned int outWidth , unsigned int outHeight , unsigned int windowRadius , bool verbose );
+Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHeight , int windowRadius);
 
 #endif // TEXTURE_SYNTHESIS_INCLUDED

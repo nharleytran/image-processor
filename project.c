@@ -18,15 +18,14 @@ int main( int argc , char *argv[] )
 	// TODO: IMPLEMENT THIS FUNCTION
 	FILE *in = fopen(argv[1],"rb");
     const Image* img = ReadPPM(in);
-	bool flag;
 	int outWidth = argv[3];
 	int outHeight = argv[4];
 	int windowRadius= argv[5];
 
-	Image* synimg=SynthesizeFromExemplar( img, outWidth , outHeight , windowRadius ,flag);
+	Image* synimg=SynthesizeFromExemplar( img, outWidth , outHeight , windowRadius);
 
 	fclose(in);
-     FILE *out = fopen((argv[2],"wb");
+     FILE *out = fopen(argv[2],"wb");
      WritePPM(out,synimg);
      fclose(out);
 

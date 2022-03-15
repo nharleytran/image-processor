@@ -6,6 +6,7 @@
 #include <time.h>
 #include <assert.h>
 #include "texture_synthesis.h"
+#include "image.h"
 
 // compares tbs pixels 
 int CompareTBSPixels( const void *v1 , const void *v2 )
@@ -67,7 +68,9 @@ int * find_unset(const Image *img, int width, int height) {
 
 	return unset_list;
 
+	}
 }
+
 
 // Determines if the unset pixel has any set neighbors. 
 // If so, creates a TBSPixel object for that pixel.
@@ -76,11 +79,11 @@ TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_
 	int i = 0;
 	int j = 0;
 
-	TBSPixel * TBSPixels = (int *) calloc(sizeof(TBSPixel));
+	TBSPixel * TBSPixels = (int *) calloc(1,sizeof(TBSPixel));
 
 	while (*(unset_list+i) != NULL) {
 
-		Int pos = *(unset_list+i);
+		int pos = *(unset_list+i);
 		int alpha_counter = 0;
 
 		// case 1: on corner
@@ -269,84 +272,9 @@ TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_
 
 }
 
-Image *SynthesizeFromExemplar( const Image *exemplar , unsigned int outWidth , unsigned int outHeight , unsigned int windowRadius , bool flag )
-{
-	Image* synimg = NULL;
-	flag = FALSE;
-    synimg = AllocateImage( outWidth , outHeight);
-
-	while (flag == FALSE)
-	{
-	  for( unsigned int i=0 ; i<(unsigned int)(img->width) ; i++ )
-	{
-        for( unsigned int j=0 ; j<(unsigned int)(img->height) ; j++ ){
-
-        synimg->pixels[i*synimg->width + j].r = img->pixels[i*img->width + j].r;
-        synimg->pixels[i*synimg->width + j].b = img->pixels[i*img->width + j].b;
-        synimg->pixels[i*synimg->width + j].g = img->pixels[i*img->width + j].g;
-        synimg->pixels[i*synimg->width + j].a = img->pixels[i*img->width + j].a;
-	}        
-    }
-	 TBSPixel *TBSPixel_list = create_TBSPixels(exemplar, outWidth, outHeight, find_unset(synimg, Outwidth, Outheight);
-	 int error = SortTBSPixels(TBSPixel_list,(sizeof(TBSPixel_list))/sizeof(TBSPixel));
-	 assign_match(examplar, synimg, (*TBSPixel_list).idx.x,(*TBSPixel_list).idx.y , int windowsRadius) ;
-	 flag = are_you_fill(synimg);9
-	}
-	
-{
-
-}
-
-bool are_you_fill(Image *synimg, int * unset )
-{
-		if (unset== NULL) {
-			bool flag = TRUE; 
-	    else 
-			flag = FALSE; 
-			
-}
-void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) {
-
-	float * sum_array = calloc(img->width * img->height * sizeof(float));
-	for (int i = 0; i < img->width * img->height; i++) {
-
-			*(sum_array + i) = compare_windows(img, colS, rowS, i % img->width, i / img->width, synimg->width, synimg->height, r);
-	
-	}
-
-	float threshold = (1.1)*list_min(sum_array);
-
-	int a = 0;
-
-	for (int i = 0; i < img->width * img->height; i++) {
-		if (*(sum_array+i) <= threshold) {
-			a++;
-		}
-	}
-
-	int counter = 0;
-	int good_pixel_values[a] = {0};
-
-	for (int i = 0; i < img->width * img->height; i++) {
-		if (*(sum_array+i) <= threshold) {
-			
-			good_pixel_values[counter] = i;
-			counter++;
-
-		}
-	}
-
-	int chosen_position = RandomPick(a);
-
-	synimg->pixels[colS+rowS*synimg->width].r = img->pixels[chosen_position].r;
-	synimg->pixels[colS+rowS*synimg->width].g = img->pixels[chosen_position].g;
-	synimg->pixels[colS+rowS*synimg->width].b = img->pixels[chosen_position].b;
-	synimg->pixels[colS+rowS*synimg->width].a = img->pixels[chosen_position].a;
-}
-
 float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX, int width, int height, int r) {
 
-	float diff = 0.0;
+	float sum = 0.0;
 	float sigma = ((2*r)+1)/6.4;
 
 	for (int col = - r; col < r + 1; col++) {
@@ -362,36 +290,13 @@ float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX,
 					float d = PixelSquaredDifference(img->pixels[(width * (rowS + row)) + (colS + col)], 
 									img->pixels[((width * (rowS + row)) + (colS + col))]);
 					float s = exp(-(col*col+row*row)/(2*sigma*sigma));
-					diff += d * s;
+					sum += d * s;
 
 				}
 			}
 		}
 	}
 	return sum;
-}
-
-//returns a window of size WindowSize around a given pixel 
-int * GetNeigborhoodWindow(const Image *img, int w_width=5, int w_height=5, int width, int height,int pixel_index_x,int pixel_index_y) {
-	
-	int *neigborhood_list = malloc((w_height * w_width * sizeof(int));
-	
-	for(int j = 0 ; j< 5; j++)
-	{
-		for (int i = -2; i < 3; i++) {
-			neigborhood_list[i+2] = ((img->pixels)+((pixel_index_x*pixel_index_y)+(j*width))+i).a;
-		}
-
-	}
-	return neigborhood_list;
-
-}
-
-// randomly picks an element from a list
-int RandomPick(int length) {
-
-	return rand() % length;
-
 }
 
 // returns minimum value of a list
@@ -411,6 +316,104 @@ float list_min(float *a) {
 	float min = temp_a[0];
 	free(temp_a);
  	return min;
+}
+
+//returns a window of size WindowSize around a given pixel 
+// int * GetNeigborhoodWindow(const Image *img, int w_width, int w_height, int width, int height,int pixel_index_x,int pixel_index_y) {
+	
+// 	int *neigborhood_list = malloc(w_height * w_width * sizeof(int));
+	
+// 	for(int j = 0 ; j< 5; j++)
+// 	{
+// 		for (int i = -2; i < 3; i++) {
+// 			neigborhood_list[i+2] = ((img->pixels[(pixel_index_x*pixel_index_y)+(j*width)+i)].a;
+// 		}
+
+// 	}
+// 	return neigborhood_list;
+
+// }
+
+// randomly picks an element from a list
+int RandomPick(int length) {
+
+	return rand() % length;
+
+}
+
+void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) {
+
+	float * sum_array = calloc(img->width * img->height, sizeof(float));
+	for (int i = 0; i < img->width * img->height; i++) {
+
+			*(sum_array + i) = compare_windows(img, colS, rowS, i % img->width, i / img->width, synimg->width, synimg->height, r);
+	
+	}
+
+	float threshold = (1.1)*list_min(sum_array);
+
+	int a = 0;
+
+	for (int i = 0; i < img->width * img->height; i++) {
+		if (*(sum_array+i) <= threshold) {
+			a++;
+		}
+	}
+
+	int counter = 0;
+	int good_pixel_values[a];
+
+	for (int i = 0; i < img->width * img->height; i++) {
+		if (*(sum_array+i) <= threshold) {
+			
+			good_pixel_values[counter] = i;
+			counter++;
+
+		}
+	}
+
+	int chosen_position = RandomPick(a);
+
+	synimg->pixels[colS+rowS*synimg->width].r = img->pixels[chosen_position].r;
+	synimg->pixels[colS+rowS*synimg->width].g = img->pixels[chosen_position].g;
+	synimg->pixels[colS+rowS*synimg->width].b = img->pixels[chosen_position].b;
+	synimg->pixels[colS+rowS*synimg->width].a = img->pixels[chosen_position].a;
+}
+
+bool are_you_fill(Image *synimg, int * unset ){
+	bool flag;
+		if (unset== NULL) 
+			return flag = true; 
+	    else 
+			return flag = false; 
+}
+
+
+
+
+Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHeight , int windowRadius  )
+{
+	Image* synimg = NULL;
+	bool flag = false;
+    synimg = AllocateImage( outWidth , outHeight);
+
+	while (flag == false){
+	  for( int i=0 ; i<(int)(exemplar->width) ; i++ ){
+        for( int j=0 ; j<(int)(exemplar->height) ; j++ ){
+
+        synimg->pixels[i*synimg->width + j].r = exemplar->pixels[i*exemplar->width + j].r;
+        synimg->pixels[i*synimg->width + j].b = exemplar->pixels[i*exemplar->width + j].b;
+        synimg->pixels[i*synimg->width + j].g = exemplar->pixels[i*exemplar->width + j].g;
+        synimg->pixels[i*synimg->width + j].a = exemplar->pixels[i*exemplar->width + j].a;
+			}        
+    	}
+
+
+	 TBSPixel *TBSPixel_list = create_TBSPixels(exemplar, outWidth, outHeight, find_unset(synimg, outWidth, outHeight));
+	 int error = SortTBSPixels(TBSPixel_list,(sizeof(TBSPixel_list))/sizeof(TBSPixel));
+	 assign_match(exemplar, synimg, (*TBSPixel_list).idx.x,(*TBSPixel_list).idx.y , windowRadius);
+	 flag = are_you_fill( synimg, find_unset(synimg, outWidth, outHeight) );
+	}	
 }
 
 // generates a two-dimensional Gaussian in a window of given a 
