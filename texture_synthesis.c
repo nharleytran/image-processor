@@ -308,6 +308,44 @@ function FindMatches(Template,SampleImage)
 end
 }
 
+void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) {
+
+	float * sum_array = calloc(img->width * img->height * sizeof(float));
+	for (int i = 0; i < img->width * img->height; i++) {
+
+			*(sum_array + i) = compare_windows(img, colS, rowS, i % img->width, i / img->width, synimg->width, synimg->height, r);
+	
+	}
+
+	float threshold = (1.1)*list_min(sum_array);
+
+	int a = 0;
+
+	for (int i = 0; i < img->width * img->height; i++) {
+		if (*(sum_array+i) <= threshold) {
+			a++;
+		}
+	}
+
+	int counter = 0;
+	int good_pixel_values[a] = {0};
+
+	for (int i = 0; i < img->width * img->height; i++) {
+		if (*(sum_array+i) <= threshold) {
+			
+			good_pixel_values[counter] = i;
+			counter++;
+
+		}
+	}
+
+	int chosen_position = RandomPick(a);
+
+	// TODO: assign TBS pixel with rgb values
+	return; // replace stub
+
+}
+
 float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX, int width, int height, int r) {
 
 	float diff = 0.0;
@@ -358,23 +396,23 @@ int RandomPick(int length) {
 
 }
 
-int desc_sort(float *a)
-{
- size_t n = sizeof(a) / sizeof(float);
- int i, j, temp;
- for(i=0;i< n-1;i++)
- {
-  for(j=i+1;j< n;j++)
-  {
-   if(a[i]< a[j])
-   {
-    temp = a[i];
-    a[i] = a[j];
-    a[j] = temp;
-   }
-  }
- }
- return a[0];
+// returns minimum value of a list
+float list_min(float *a) {
+	float * temp_a = a ; 
+	size_t n = sizeof(temp_a) / sizeof(float);
+ 	int i, j, temp;
+ 		for (i=0;i< n-1;i++) {
+			for (j=i+1;j< n;j++) {
+				if (temp_a[i]> temp_a[j]) {
+    				temp = temp_a[i];
+					temp_a[i] = temp_a[j];
+    				temp_a[j] = temp;
+				}
+			}
+		}
+	float min = temp_a[0];
+	free(temp_a);
+ 	return min;
 }
 
 // generates a two-dimensional Gaussian in a window of given a 
