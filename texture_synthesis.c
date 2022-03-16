@@ -265,7 +265,7 @@ TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_
 			*(TBSPixels + j) = temp;
 			j++;
 			// TBSPixel * error =realloc(TBSPixels, sizeof(TBSPixel));
-			TBSPixels =realloc(TBSPixels, sizeof(TBSPixel)* (j+1) );
+			TBSPixels =realloc(TBSPixels, sizeof(TBSPixel)* (j+1));
 
 			if (TBSPixels == NULL) {
 				printf("Failed to allocate memory when creating TBSPixel_list");
@@ -436,8 +436,9 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
 	 assign_match(exemplar, synimg, (*TBSPixel_list).idx.x,(*TBSPixel_list).idx.y , windowRadius);
 
 	 flag = are_you_fill( find_unset(synimg, outWidth, outHeight) );
+	 free(TBSPixel_list); 
 	}	
-
+	
 	return synimg;
 }
 

@@ -33,10 +33,9 @@ int main( int argc , char *argv[] )
 	Image* synimg = SynthesizeFromExemplar( img, outWidth , outHeight , windowRadius);
 
 	fclose(in);
-     FILE *out = fopen(argv[2],"wb");
-     WritePPM(out,synimg);
-     fclose(out);
-
+    FILE *out = fopen(argv[2],"wb");
+    WritePPM(out,synimg);
+    fclose(out);
 	// Get the time at the end of the execution
 	clock_t clock_difference = clock() - start_clock;
 
