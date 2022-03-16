@@ -5,8 +5,8 @@
 #include <math.h>
 #include <time.h>
 #include <assert.h>
-#include "texture_synthesis.h"
 #include "image.h"
+#include "texture_synthesis.h"
 
 // compares tbs pixels 
 int CompareTBSPixels( const void *v1 , const void *v2 )

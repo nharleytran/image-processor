@@ -1,8 +1,6 @@
 #ifndef TEXTURE_SYNTHESIS_INCLUDED
 #define TEXTURE_SYNTHESIS_INCLUDED
 #include "image.h"
-#include "texture_synthesis.c"
-
 
 /** A struct storing information about a to-be-synthesized pixel*/
 typedef struct
@@ -23,6 +21,7 @@ int CompareTBSPixels( const void *v1 , const void *v2 );
 /** A function that sorts an array of TBSPixels*/
 int SortTBSPixels( TBSPixel *tbsPixels , unsigned int sz );
 
+
 // // Find all unset pixels, which have alpha channel = 0
 // int * find_unset(const Image *img, int width, int height);
 
@@ -30,8 +29,6 @@ int SortTBSPixels( TBSPixel *tbsPixels , unsigned int sz );
 // // If so, creates a TBSPixel object for that pixel.
 // TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_list);
 
-
 /** A function that extends the exemplar into an image with the specified dimensions, using the prescribed window radius -- the verbose argument is passed in to enable logging to the command prompt, if desired*/
 Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHeight , int windowRadius);
-
 #endif // TEXTURE_SYNTHESIS_INCLUDED
