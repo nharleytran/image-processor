@@ -17,7 +17,7 @@ texture_synthesis.o: texture_synthesis.h texture_synthesis.c image.h
 	$(CC) $(CFLAGS) -c texture_synthesis.c  -lz -lm
 
 valgrind:
-	valgrind ./project
+	valgrind -v --tool=memcheck --leak-check=yes ./project
 
 clean:
 	rm -f *.o

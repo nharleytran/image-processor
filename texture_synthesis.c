@@ -373,6 +373,7 @@ void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) 
 	int good_pixel_values[a];
 
 	for (int i = 0; i < (int)img->width * (int)img->height; i++) {
+		
 		if (*(sum_array+i) <= threshold) {
 			
 			good_pixel_values[counter] = i;
