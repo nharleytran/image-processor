@@ -9,38 +9,47 @@
 #include <string.h>
 
 
-int main( int argc , char *argv[] )
+int main(void)
 {
-
-	if (argc != 6) {
-		printf("Incorrect number of command line arguments");
-		return 1;
-	}
-
-	// Seed the random number generator so that the code produces the same results on the same input.
-	srand(0);
-
-	// Get the time at the start of execution
-	clock_t start_clock = clock();
-
-	// TODO: IMPLEMENT THIS FUNCTION
-	FILE *in = fopen(argv[1],"rb");
+	FILE *in = fopen("161.ppm","rb");
+    
     const Image* img = ReadPPM(in);
-	int outWidth = atoi(argv[3]);
-	int outHeight = atoi(argv[4]);
-	int windowRadius= atoi(argv[5]);
 
-	Image* synimg = SynthesizeFromExemplar( img, outWidth , outHeight , windowRadius);
+    Image* synimg = NULL;
+    synimg = AllocateImage( 128 , 128 );
 
-	fclose(in);
-    FILE *out = fopen(argv[2],"wb");
-    WritePPM(out,synimg);
-    fclose(out);
-	// Get the time at the end of the execution
-	clock_t clock_difference = clock() - start_clock;
+    for( unsigned int i=0 ; i<(unsigned int)(img->width) ; i++ )
+	{
+        for( unsigned int j=0 ; j<(unsigned int)(img->height) ; j++ ){
 
-	// Convert the time difference into seconds and print
-	printf( "Synthesized texture in %.2f(s)\n" , (double)clock_difference/CLOCKS_PER_SEC );
-	return 0;
+        synimg->pixels[i*synimg->width + j].r = img->pixels[i*img->width + j].r;
+        synimg->pixels[i*synimg->width + j].b = img->pixels[i*img->width + j].b;
+        synimg->pixels[i*synimg->width + j].g = img->pixels[i*img->width + j].g;
+        synimg->pixels[i*synimg->width + j].a = img->pixels[i*img->width + j].a;
+		}        
+    }
+
+    int * unset = find_unset(img, synimg);
+
+    // int size = *(&unset+1) - unset;
+    //Cannot use sizeof for a pointer array
+
+    int size = synimg->height * synimg->width - img->height * img->width;
+
+    // printf("%d ",size);
+    
+    // for( int i=0 ; i< size; i++ ){
+    //     printf("%d ",unset[i]);
+    //  }
+
+    for(int i =0; i < size; i++){
+        synimg->pixels[unset[i]].r = 255;
+    }
+    fclose(in);
+    
+     FILE *out = fopen("test2.ppm","wb");
+     WritePPM(out,synimg);
+     fclose(out);
+
+
 }
-

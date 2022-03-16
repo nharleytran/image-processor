@@ -22,12 +22,24 @@ int CompareTBSPixels( const void *v1 , const void *v2 );
 int SortTBSPixels( TBSPixel *tbsPixels , unsigned int sz );
 
 
-// // Find all unset pixels, which have alpha channel = 0
-// int * find_unset(const Image *img, int width, int height);
+// Find all unset pixels, which have alpha channel = 0
+int * find_unset(const Image *img, Image *synimg);
 
-// // Determines if the unset pixel has any set neighbors. 
-// // If so, creates a TBSPixel object for that pixel.
-// TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_list);
+// Determines if the unset pixel has any set neighbors. 
+// If so, creates a TBSPixel object for that pixel.
+TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_list);
+
+float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX, int width, int height, int r);
+
+float list_min(float *a, int list_length);
+
+int RandomPick(int length);
+
+void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r);
+
+bool are_you_fill(int * unset);
+
+
 
 /** A function that extends the exemplar into an image with the specified dimensions, using the prescribed window radius -- the verbose argument is passed in to enable logging to the command prompt, if desired*/
 Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHeight , int windowRadius);
