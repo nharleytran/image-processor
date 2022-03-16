@@ -20,5 +20,5 @@ valgrind:
 	valgrind ./project
 
 clean:
-	rm -f *.o project
+	rm -f *.o
 
