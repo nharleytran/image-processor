@@ -264,9 +264,10 @@ TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_
 			TBSPixel temp = { {pos % width, pos / width} , alpha_counter, 0}; 
 			*(TBSPixels + j) = temp;
 			j++;
-			TBSPixel * error =realloc(TBSPixels, sizeof(TBSPixel));
+			// TBSPixel * error =realloc(TBSPixels, sizeof(TBSPixel));
+			TBSPixels =realloc(TBSPixels, sizeof(TBSPixel)* (j+1) );
 
-			if (error == NULL) {
+			if (TBSPixels == NULL) {
 				printf("Failed to allocate memory when creating TBSPixel_list");
 				continue;
 			}
