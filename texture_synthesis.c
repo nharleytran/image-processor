@@ -55,20 +55,22 @@ int * find_unset(const Image *img, int width, int height) {
 	
 	int *unset_list = malloc((height * width - img->height * img->width) * sizeof(int));
 	
-	unsigned int j = 0;
+	int j = 0;
 	
-	for (unsigned int i = 0; i < height * width; i++) {
+	for (int i = 0; i < height * width; i++) {
+
 		if (img->pixels[i].a == 0) {
 			unset_list[j] = i;	
 			j++;
 		}
-		else{
-			unset_list = NULL;
-		}
-
-	return unset_list;
 
 	}
+
+	if (j == 0) {
+		unset_list = NULL;
+	}
+
+	return unset_list;
 }
 
 
@@ -79,9 +81,9 @@ TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_
 	int i = 0;
 	int j = 0;
 
-	TBSPixel * TBSPixels = (int *) calloc(1,sizeof(TBSPixel));
+	TBSPixel * TBSPixels = (TBSPixel *) calloc(1,sizeof(TBSPixel));
 
-	while (*(unset_list+i) != NULL) {
+	while ((unset_list+i) != NULL) {
 
 		int pos = *(unset_list+i);
 		int alpha_counter = 0;
@@ -262,7 +264,12 @@ TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_
 			TBSPixel temp = { {pos % width, pos / width} , alpha_counter, 0}; 
 			*(TBSPixels + j) = temp;
 			j++;
-			realloc(TBSPixels, sizeof(TBSPixel));
+			TBSPixel * error =realloc(TBSPixels, sizeof(TBSPixel));
+
+			if (error == NULL) {
+				printf("Failed to allocate memory when creating TBSPixel_list");
+				continue;
+			}
 		}
 
     	i++;
@@ -300,10 +307,11 @@ float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX,
 }
 
 // returns minimum value of a list
-float list_min(float *a) {
+float list_min(float *a, int list_length) {
 	float * temp_a = a ; 
-	size_t n = sizeof(temp_a) / sizeof(float);
- 	int i, j, temp;
+	int n = list_length;
+ 	int i, j;
+	float temp;
  		for (i=0;i< n-1;i++) {
 			for (j=i+1;j< n;j++) {
 				if (temp_a[i]> temp_a[j]) {
@@ -344,17 +352,18 @@ int RandomPick(int length) {
 void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) {
 
 	float * sum_array = calloc(img->width * img->height, sizeof(float));
-	for (int i = 0; i < img->width * img->height; i++) {
+	int i;
+	for (i = 0; i < (int)img->width * (int)img->height; i++) {
 
 			*(sum_array + i) = compare_windows(img, colS, rowS, i % img->width, i / img->width, synimg->width, synimg->height, r);
 	
 	}
 
-	float threshold = (1.1)*list_min(sum_array);
+	float threshold = (1.1)*list_min(sum_array, i);
 
 	int a = 0;
 
-	for (int i = 0; i < img->width * img->height; i++) {
+	for (int i = 0; i < (int)img->width * (int)img->height; i++) {
 		if (*(sum_array+i) <= threshold) {
 			a++;
 		}
@@ -363,7 +372,7 @@ void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) 
 	int counter = 0;
 	int good_pixel_values[a];
 
-	for (int i = 0; i < img->width * img->height; i++) {
+	for (int i = 0; i < (int)img->width * (int)img->height; i++) {
 		if (*(sum_array+i) <= threshold) {
 			
 			good_pixel_values[counter] = i;
@@ -380,12 +389,14 @@ void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) 
 	synimg->pixels[colS+rowS*synimg->width].a = img->pixels[chosen_position].a;
 }
 
-bool are_you_fill(Image *synimg, int * unset ){
+bool are_you_fill(int * unset){
 	bool flag;
-		if (unset== NULL) 
+		if (unset== NULL) {
 			return flag = true; 
-	    else 
+		}
+	    else {
 			return flag = false; 
+		}
 }
 
 Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHeight , int windowRadius)
@@ -407,10 +418,25 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
 
 
 	 TBSPixel *TBSPixel_list = create_TBSPixels(exemplar, outWidth, outHeight, find_unset(synimg, outWidth, outHeight));
-	 int error = SortTBSPixels(TBSPixel_list,(sizeof(TBSPixel_list))/sizeof(TBSPixel));
+
+	 int counter = 0;
+	 while ((TBSPixel_list + counter) != NULL) {
+		 counter++;
+	 }
+	 counter--;
+
+	 int error = SortTBSPixels(TBSPixel_list, counter);
+
+	 if (error) {
+		 return NULL;
+	 }
+
 	 assign_match(exemplar, synimg, (*TBSPixel_list).idx.x,(*TBSPixel_list).idx.y , windowRadius);
-	 flag = are_you_fill( synimg, find_unset(synimg, outWidth, outHeight) );
+
+	 flag = are_you_fill( find_unset(synimg, outWidth, outHeight) );
 	}	
+
+	return synimg;
 }
 
 // generates a two-dimensional Gaussian in a window of given a 

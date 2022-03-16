@@ -11,6 +11,12 @@
 
 int main( int argc , char *argv[] )
 {
+
+	if (argc != 6) {
+		printf("Incorrect number of command line arguments");
+		return 1;
+	}
+
 	// Seed the random number generator so that the code produces the same results on the same input.
 	srand(0);
 
