@@ -63,3 +63,12 @@ void FreeImage( Image **image )
   free(image);
   *image = NULL;
 }
+
+void SetPixel(Image *image, const unsigned int row, const unsigned int col, const Pixel *p)
+{
+	unsigned int index = col + row * image->width;
+	image->pixels[index].r = p->r;
+	image->pixels[index].g = p->g;
+	image->pixels[index].b = p->b;
+	image->pixels[index].a = p->a;
+}

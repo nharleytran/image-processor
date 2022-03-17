@@ -16,20 +16,18 @@ int main(void)
     const Image* img = ReadPPM(in);
 
     Image* synimg = NULL;
-    synimg = AllocateImage( 256 , 256 );
+    synimg = AllocateImage( 128 , 128 );
 
-    for( unsigned int i=0 ; i<(unsigned int)(img->width) ; i++ )
-	{
-        for( unsigned int j=0 ; j<(unsigned int)(img->height) ; j++ ){
+    for (unsigned int col = 0; col < img->width; col++) {
+        for (unsigned int row = 0; row < img->height; row++) {
+		
+		PixelIndex idx = {col, row};
+		SetPixel(synimg, row, col, GetPixel(img, idx));
 
-        synimg->pixels[i*synimg->width + j].r = img->pixels[i*img->width + j].r;
-        synimg->pixels[i*synimg->width + j].b = img->pixels[i*img->width + j].b;
-        synimg->pixels[i*synimg->width + j].g = img->pixels[i*img->width + j].g;
-        synimg->pixels[i*synimg->width + j].a = img->pixels[i*img->width + j].a;
-		}        
+        }
     }
 
-   
+
 
     // int size = *(&unset+1) - unset;
     //Cannot use sizeof for a pointer array
@@ -37,14 +35,13 @@ int main(void)
     int size = synimg->height * synimg->width - img->height * img->width;
 
     // printf("%d ",size);
-    int i = 0; 
-    while(i < 20)
-    {
+   
+   
     int * unset = find_unset(img, synimg);
     TBSPixel * TBSPixellist = create_TBSPixels(synimg,img ,synimg->width, synimg->height,unset);
 
-    for( int i=0 ; i< 131; i++ ){
-       printf("x=%d y=%d ",(TBSPixellist+i)->idx.x,(TBSPixellist+i)->idx.y);
+    for(int i = 0; i < 130 ; i++) {        
+        printf("x=%d y=%d ",(TBSPixellist+i)->idx.x,(TBSPixellist+i)->idx.y);
     }
     // for( int i=0 ; i< size; i++ ){
     //     printf("%d ",unset[i]);
@@ -54,15 +51,14 @@ int main(void)
      synimg->pixels[unset[i]].r = 255;
     }
 
-    for(int i =0; i < sizeof(TBSPixellist); i++){
+    for(int i =0; i < 129; i++){
      int index = ((TBSPixellist+i)->idx.x)+(((TBSPixellist+i)->idx.y)*synimg->width);
      synimg->pixels[index].r = 255;
      synimg->pixels[index].g = 255;
      synimg->pixels[index].b = 255;
      synimg->pixels[index].a = 255;
     }
-    i++;
-    }
+   
 
     fclose(in);
     

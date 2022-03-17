@@ -30,7 +30,9 @@ int main( int argc , char *argv[] )
 	int outHeight = atoi(argv[4]);
 	int windowRadius= atoi(argv[5]);
 
+	printf("Synthetising...\n");
 	Image* synimg = SynthesizeFromExemplar( img, outWidth , outHeight , windowRadius);
+	printf("Done.\n");
 
 	fclose(in);
     FILE *out = fopen(argv[2],"wb");

@@ -75,14 +75,15 @@ int * find_unset(const Image *img, Image *synimg) {
 }
 
 
-// Determines if the unset pixel has any set neighbors. 
+// Determines if the unset pixel has any set neighbors.
 // If so, creates a TBSPixel object for that pixel.
 TBSPixel * create_TBSPixels(Image *img, const Image *examplar ,int width, int height, int *unset_list) {
     
 	int i = 0;
 	int j = 0;
 
-	TBSPixel * TBSPixels = (TBSPixel *) malloc(sizeof(TBSPixel) * width * height);
+	const unsigned int TBSPixels_size = width + height;
+	TBSPixel * TBSPixels = (TBSPixel *) malloc(sizeof(TBSPixel) * TBSPixels_size);
 
 	if (TBSPixels == NULL) {
 				printf("Failed to allocate memory when creating TBSPixel_list");
@@ -279,12 +280,7 @@ TBSPixel * create_TBSPixels(Image *img, const Image *examplar ,int width, int he
 		k++;
 	}
 	
-
-	TBSPixels = realloc(TBSPixels, sizeof(TBSPixel) * (j-1));
-	//TBSPixels = realloc(TBSPixels, sizeof(TBSPixel));
-
 	return TBSPixels;
-
 }
 
 float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX, int width, int height, int r) {
@@ -390,12 +386,14 @@ void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) 
 		}
 	}
 
-	int chosen_position = RandomPick(a);
+	int rand_good_pixel_idx = good_pixel_values[RandomPick(a)];
+	SetPixel(synimg, rowS, colS, img->pixels + rand_good_pixel_idx);
 
-	synimg->pixels[colS+rowS*synimg->width].r = img->pixels[chosen_position].r;
-	synimg->pixels[colS+rowS*synimg->width].g = img->pixels[chosen_position].g;
-	synimg->pixels[colS+rowS*synimg->width].b = img->pixels[chosen_position].b;
-	synimg->pixels[colS+rowS*synimg->width].a = img->pixels[chosen_position].a;
+	//int chosen_position = RandomPick(a);
+	//synimg->pixels[colS+rowS*synimg->width].r = img->pixels[chosen_position].r;
+	//synimg->pixels[colS+rowS*synimg->width].g = img->pixels[chosen_position].g;
+	//synimg->pixels[colS+rowS*synimg->width].b = img->pixels[chosen_position].b;
+	//synimg->pixels[colS+rowS*synimg->width].a = img->pixels[chosen_position].a;
 }
 
 bool are_you_fill(int * unset){
@@ -415,13 +413,16 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
     synimg = AllocateImage( outWidth , outHeight);
 
 	while (flag == false){
-	  for( int i=0 ; i<(int)(exemplar->width) ; i++ ){
-        for( int j=0 ; j<(int)(exemplar->height) ; j++ ){
+	  for (unsigned int col = 0; col < exemplar->width; col++) {
+        for (unsigned int row = 0; row < exemplar->height; row++) {
+		
+		PixelIndex idx = {col, row};
+		SetPixel(synimg, row, col, GetConstPixel(exemplar, idx));
 
-        synimg->pixels[i*synimg->width + j].r = exemplar->pixels[i*exemplar->width + j].r;
-        synimg->pixels[i*synimg->width + j].b = exemplar->pixels[i*exemplar->width + j].b;
-        synimg->pixels[i*synimg->width + j].g = exemplar->pixels[i*exemplar->width + j].g;
-        synimg->pixels[i*synimg->width + j].a = exemplar->pixels[i*exemplar->width + j].a;
+        // synimg->pixels[i*synimg->width + j].r = exemplar->pixels[i*exemplar->width + j].r;
+        // synimg->pixels[i*synimg->width + j].b = exemplar->pixels[i*exemplar->width + j].b;
+        // synimg->pixels[i*synimg->width + j].g = exemplar->pixels[i*exemplar->width + j].g;
+        // synimg->pixels[i*synimg->width + j].a = exemplar->pixels[i*exemplar->width + j].a;
 			}        
     	}
 

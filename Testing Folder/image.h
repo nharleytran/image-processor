@@ -77,5 +77,6 @@ Image *AllocateImage( unsigned int width , unsigned int height );
 /** A function deallocating the memory associated to an image and sets the pointer to the image to NULL (this deallocates both the pixels member of the image and the image itself*/
 void FreeImage( Image **img );
 
+void SetPixel(Image *image, const unsigned int row, const unsigned int col, const Pixel* p);
 
 #endif // IMAGE_INCLUDED
