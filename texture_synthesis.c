@@ -399,7 +399,7 @@ void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) 
 
 bool are_you_fill(int * unset){
 	bool flag;
-		if (unset== NULL) {
+		if (unset == NULL) {
 			return flag = true; 
 		}
 	    else {
@@ -423,9 +423,9 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
 			}        
     	}
 	while (flag == false){
-	  
+	 printf("first");
 	 TBSPixel *TBSPixel_list = create_TBSPixels(synimg,exemplar, outWidth, outHeight, find_unset(exemplar, synimg));
-
+	  printf("TBSPIXEL/n");
 	 int counter = 0;
 	 while ((TBSPixel_list + counter) != NULL) {
 		 counter++;
@@ -433,14 +433,15 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
 	 counter--;
 
 	 int error = SortTBSPixels(TBSPixel_list, counter);
-
+	 printf("SORTTBS/n");
 	 if (error) {
 		 return NULL;
 	 }
 
 	 assign_match(exemplar, synimg, (*TBSPixel_list).idx.x,(*TBSPixel_list).idx.y , windowRadius);
-
+	 printf("ASSIGN_MACTH/n");
 	 flag = are_you_fill( find_unset(exemplar, synimg) );
+	 printf("FILL");
 	 free(TBSPixel_list); 
 	}	
 	
