@@ -280,7 +280,8 @@ TBSPixel * create_TBSPixels(Image *img, const Image *examplar ,int width, int he
 	}
 	
 
-	//TBSPixels = realloc(TBSPixels, sizeof(TBSPixel) * (j-1));
+	TBSPixels = realloc(TBSPixels, sizeof(TBSPixel) * (j-1));
+	//TBSPixels = realloc(TBSPixels, sizeof(TBSPixel));
 
 	return TBSPixels;
 
