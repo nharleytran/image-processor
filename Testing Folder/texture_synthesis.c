@@ -82,7 +82,12 @@ TBSPixel * create_TBSPixels(Image *img, int width, int height, int *unset_list) 
 	int i = 0;
 	int j = 0;
 
-	TBSPixel ** TBSPixels = (TBSPixel **) calloc(1,sizeof(TBSPixel*));
+	TBSPixel * TBSPixels = (TBSPixel *) malloc(sizeof(TBSPixel) * width * height);
+
+	if (TBSPixels == NULL) {
+				printf("Failed to allocate memory when creating TBSPixel_list");
+				return NULL;
+	}
 
 	while ((unset_list+i) != NULL) {
 
@@ -263,21 +268,17 @@ TBSPixel * create_TBSPixels(Image *img, int width, int height, int *unset_list) 
 		if (alpha_counter > 0) {
 		
 			TBSPixel temp = { {pos % width, pos / width} , alpha_counter, 0}; 
-			**(TBSPixels + j) = temp;
+			*(TBSPixels + j) = temp;
 			j++;
-			// TBSPixel * error =realloc(TBSPixels, sizeof(TBSPixel));
-			TBSPixels =realloc(TBSPixels, sizeof(TBSPixel)* (j+1));
 
-			if (TBSPixels == NULL) {
-				printf("Failed to allocate memory when creating TBSPixel_list");
-				continue;
-			}
 		}
 
     	i++;
 	}
 
-	return *TBSPixels;
+	TBSPixels = realloc(TBSPixels, sizeof(TBSPixel) * (j-1));
+
+	return TBSPixels;
 
 }
 
