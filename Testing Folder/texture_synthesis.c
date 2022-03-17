@@ -97,7 +97,7 @@ TBSPixel * create_TBSPixels(Image *img, const Image *examplar ,int width, int he
 		int alpha_counter = 0;
 
 		// case 1: on corner
-		printf("%d",pos);
+		//printf("%d ",pos);
 		if (pos == 0) {
 		
 			if (img->pixels[pos + 1].a != 0) {
@@ -156,7 +156,7 @@ TBSPixel * create_TBSPixels(Image *img, const Image *examplar ,int width, int he
 
 
 		// case 2: on edge but not corner
-		else if (pos < width) {
+		else if (pos < width) { // should not incldue corner position 
 
 			if (img->pixels[pos - 1].a != 0) {
 				alpha_counter++;
@@ -280,7 +280,7 @@ TBSPixel * create_TBSPixels(Image *img, const Image *examplar ,int width, int he
 	}
 	
 
-	TBSPixels = realloc(TBSPixels, sizeof(TBSPixel) * (j-1));
+	//TBSPixels = realloc(TBSPixels, sizeof(TBSPixel) * (j-1));
 
 	return TBSPixels;
 
