@@ -27,8 +27,8 @@ int * find_unset(const Image *img, Image *synimg);
 
 // Determines if the unset pixel has any set neighbors. 
 // If so, creates a TBSPixel object for that pixel.
-TBSPixel * create_TBSPixels(Image *img, int width, int height, int *unset_list);
-
+//TBSPixel * create_TBSPixels(Image *img, int width, int height, int *unset_list);
+TBSPixel *create_TBSPixels(Image *img,const Image *examplar ,int width, int height, int *unset_list);
 float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX, int width, int height, int r);
 
 float list_min(float *a, int list_length);

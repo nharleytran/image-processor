@@ -1,8 +1,8 @@
 CC=gcc
-CFLAGS=-std=c99 -pedantic -Wall -Wextra
+CFLAGS=-std=c99 -pedantic -Wall -Wextra -g
 
 project: project.o image.o ppm.o texture_synthesis.o	
-	$(CC) -o project project.o image.o ppm.o texture_synthesis.o -lm 
+	$(CC) -o project project.o image.o ppm.o texture_synthesis.o -lm -g
 
 project.o: project.c image.h ppm.h texture_synthesis.h
 	$(CC) $(CFLAGS) -c project.c 

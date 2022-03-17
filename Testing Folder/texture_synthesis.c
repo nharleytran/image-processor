@@ -77,7 +77,7 @@ int * find_unset(const Image *img, Image *synimg) {
 
 // Determines if the unset pixel has any set neighbors. 
 // If so, creates a TBSPixel object for that pixel.
-TBSPixel * create_TBSPixels(Image *img, int width, int height, int *unset_list) {
+TBSPixel * create_TBSPixels(Image *img, const Image *examplar ,int width, int height, int *unset_list) {
     
 	int i = 0;
 	int j = 0;
@@ -88,14 +88,16 @@ TBSPixel * create_TBSPixels(Image *img, int width, int height, int *unset_list) 
 				printf("Failed to allocate memory when creating TBSPixel_list");
 				return NULL;
 	}
+	unsigned int k = 0; 
+	while (k < (img->height * img->width - examplar->height * examplar->width)) {
 
-	while ((unset_list+i) != NULL) {
-
-		int pos = *(unset_list+i);
+		//int pos = *(unset_list+i);
+	
+		int pos = unset_list[i];
 		int alpha_counter = 0;
 
 		// case 1: on corner
-
+		printf("%d",pos);
 		if (pos == 0) {
 		
 			if (img->pixels[pos + 1].a != 0) {
@@ -175,7 +177,7 @@ TBSPixel * create_TBSPixels(Image *img, int width, int height, int *unset_list) 
 		}
 	
 		else if (pos > width * (height - 1)) {
-
+			;
 			if (img->pixels[pos - 1].a != 0) {
 				alpha_counter++;
 			}
@@ -274,7 +276,9 @@ TBSPixel * create_TBSPixels(Image *img, int width, int height, int *unset_list) 
 		}
 
     	i++;
+		k++;
 	}
+	
 
 	TBSPixels = realloc(TBSPixels, sizeof(TBSPixel) * (j-1));
 
@@ -421,7 +425,7 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
     	}
 
 
-	 TBSPixel *TBSPixel_list = create_TBSPixels(synimg, outWidth, outHeight, find_unset(exemplar, synimg));
+	 TBSPixel *TBSPixel_list = create_TBSPixels(synimg,exemplar, outWidth, outHeight, find_unset(exemplar, synimg));
 
 	 int counter = 0;
 	 while ((TBSPixel_list + counter) != NULL) {

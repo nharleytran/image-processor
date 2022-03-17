@@ -77,20 +77,27 @@ int * find_unset(const Image *img, Image *synimg) {
 
 // Determines if the unset pixel has any set neighbors. 
 // If so, creates a TBSPixel object for that pixel.
-TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_list) {
+TBSPixel * create_TBSPixels(Image *img, const Image *examplar ,int width, int height, int *unset_list) {
     
 	int i = 0;
 	int j = 0;
 
-	TBSPixel * TBSPixels = (TBSPixel *) calloc(1,sizeof(TBSPixel));
+	TBSPixel * TBSPixels = (TBSPixel *) malloc(sizeof(TBSPixel) * width * height);
 
-	while ((unset_list+i) != NULL) {
+	if (TBSPixels == NULL) {
+				printf("Failed to allocate memory when creating TBSPixel_list");
+				return NULL;
+	}
+	unsigned int k = 0; 
+	while (k < (img->height * img->width - examplar->height * examplar->width)) {
 
-		int pos = *(unset_list+i);
+		//int pos = *(unset_list+i);
+	
+		int pos = unset_list[i];
 		int alpha_counter = 0;
 
 		// case 1: on corner
-
+		//printf("%d",pos);
 		if (pos == 0) {
 		
 			if (img->pixels[pos + 1].a != 0) {
@@ -170,7 +177,7 @@ TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_
 		}
 	
 		else if (pos > width * (height - 1)) {
-
+			;
 			if (img->pixels[pos - 1].a != 0) {
 				alpha_counter++;
 			}
@@ -265,17 +272,15 @@ TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_
 			TBSPixel temp = { {pos % width, pos / width} , alpha_counter, 0}; 
 			*(TBSPixels + j) = temp;
 			j++;
-			// TBSPixel * error =realloc(TBSPixels, sizeof(TBSPixel));
-			TBSPixels =realloc(TBSPixels, sizeof(TBSPixel)* (j+1));
 
-			if (TBSPixels == NULL) {
-				printf("Failed to allocate memory when creating TBSPixel_list");
-				continue;
-			}
 		}
 
     	i++;
+		k++;
 	}
+	
+
+	TBSPixels = realloc(TBSPixels, sizeof(TBSPixel) * (j-1));
 
 	return TBSPixels;
 
@@ -408,8 +413,7 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
 	bool flag = false;
     synimg = AllocateImage( outWidth , outHeight);
 
-	while (flag == false){
-	  for( int i=0 ; i<(int)(exemplar->width) ; i++ ){
+	for( int i=0 ; i<(int)(exemplar->width) ; i++ ){
         for( int j=0 ; j<(int)(exemplar->height) ; j++ ){
 
         synimg->pixels[i*synimg->width + j].r = exemplar->pixels[i*exemplar->width + j].r;
@@ -418,9 +422,9 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
         synimg->pixels[i*synimg->width + j].a = exemplar->pixels[i*exemplar->width + j].a;
 			}        
     	}
-
-
-	 TBSPixel *TBSPixel_list = create_TBSPixels(exemplar, outWidth, outHeight, find_unset(exemplar, synimg));
+	while (flag == false){
+	  
+	 TBSPixel *TBSPixel_list = create_TBSPixels(synimg,exemplar, outWidth, outHeight, find_unset(exemplar, synimg));
 
 	 int counter = 0;
 	 while ((TBSPixel_list + counter) != NULL) {

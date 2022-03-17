@@ -38,22 +38,19 @@ int main(void)
 
     // printf("%d ",size);
     
-    TBSPixel * TBSPixellist = create_TBSPixels(synimg, synimg->width, synimg->height,unset);
+    TBSPixel * TBSPixellist = create_TBSPixels(synimg,img ,synimg->width, synimg->height,unset);
 
-    for( int i=0 ; i< 5; i++ ){
-         printf("x=%d y=%d ",TBSPixellist->idx.x,TBSPixellist->idx.y);
-      }
-
-
-
+    //for( int i=0 ; i< 5; i++ ){
+   //     printf("x=%d y=%d ",TBSPixellist->idx.x,TBSPixellist->idx.y);
+  //    }
     // for( int i=0 ; i< size; i++ ){
     //     printf("%d ",unset[i]);
     //  }
 
 
-    for(int i =0; i < size; i++){
-        synimg->pixels[unset[i]].r = 255;
-    }
+   // for(int i =0; i < size; i++){
+   //     synimg->pixels[unset[i]].r = 255;
+  //  }
     fclose(in);
     
      FILE *out = fopen("test2.ppm","wb");
