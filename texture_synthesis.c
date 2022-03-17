@@ -51,15 +51,15 @@ int SortTBSPixels( TBSPixel *tbsPixels , unsigned int sz )
 }
 
 
-int * find_unset(const Image *img, int width, int height) {
+int * find_unset(const Image *img, Image *synimg) {
 	
-	int *unset_list = malloc((height * width - img->height * img->width) * sizeof(int));
+	int *unset_list = malloc((synimg->height * synimg->width - img->height * img->width) * sizeof(int));
 	
 	int j = 0;
 	
-	for (int i = 0; i < height * width; i++) {
+	for (unsigned int i = 0; i < synimg->height * synimg->width; i++) {
 
-		if (img->pixels[i].a == 0) {
+		if (synimg->pixels[i].a == 0) {
 			unset_list[j] = i;	
 			j++;
 		}
@@ -68,6 +68,7 @@ int * find_unset(const Image *img, int width, int height) {
 
 	if (j == 0) {
 		unset_list = NULL;
+		printf("Theres no list");
 	}
 
 	return unset_list;
@@ -419,7 +420,7 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
     	}
 
 
-	 TBSPixel *TBSPixel_list = create_TBSPixels(exemplar, outWidth, outHeight, find_unset(synimg, outWidth, outHeight));
+	 TBSPixel *TBSPixel_list = create_TBSPixels(exemplar, outWidth, outHeight, find_unset(exemplar, synimg));
 
 	 int counter = 0;
 	 while ((TBSPixel_list + counter) != NULL) {
@@ -435,7 +436,7 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
 
 	 assign_match(exemplar, synimg, (*TBSPixel_list).idx.x,(*TBSPixel_list).idx.y , windowRadius);
 
-	 flag = are_you_fill( find_unset(synimg, outWidth, outHeight) );
+	 flag = are_you_fill( find_unset(exemplar, synimg) );
 	 free(TBSPixel_list); 
 	}	
 	
