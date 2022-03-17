@@ -77,7 +77,7 @@ int * find_unset(const Image *img, Image *synimg) {
 
 // Determines if the unset pixel has any set neighbors. 
 // If so, creates a TBSPixel object for that pixel.
-TBSPixel * create_TBSPixels(const Image *img, int width, int height, int *unset_list) {
+TBSPixel * create_TBSPixels(Image *img, int width, int height, int *unset_list) {
     
 	int i = 0;
 	int j = 0;
@@ -420,7 +420,7 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
     	}
 
 
-	 TBSPixel *TBSPixel_list = create_TBSPixels(exemplar, outWidth, outHeight, find_unset(exemplar, synimg));
+	 TBSPixel *TBSPixel_list = create_TBSPixels(synimg, outWidth, outHeight, find_unset(exemplar, synimg));
 
 	 int counter = 0;
 	 while ((TBSPixel_list + counter) != NULL) {
