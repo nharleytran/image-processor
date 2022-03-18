@@ -23,6 +23,7 @@ typedef struct
 
 float** exp_cache;
 
+// initializes gaussian filter values
 void initialize_exp_cache(int r) {
 	exp_cache = malloc(sizeof(float*) * (2 * r + 1));
 	for (int i = 0; i < 2 * r + 1; i++)
@@ -141,10 +142,13 @@ TBSPixel_List create_TBSPixels(Image *img, const Image *examplar ,int width, int
 	return TBSPixel_list;
 }
 
+// check if a pixel is set
 bool is_set(const Image *image, int row, int col) {
 	return image->pixels[col + row * image->width].a != 0;
 }
 
+// returns value of comparison accuracy between TBS pixel window and exemplar pixel window
+// smaller value = more accurate
 float compare_windows(Image* synimg, const Image* exemplar, int rowS, int colS, int rowX, int colX, int r) {
 	//const float sigma = ((2.f * r) + 1.f) / 6.4f;
 	float diff = 0;
@@ -203,6 +207,7 @@ int RandomPick(int length) {
 	return rand() % length;
 }
 
+// chooses an exemplar pixel and assigns it to the chosen TBSPixel so that it becomes set
 void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) {
 
 	int * index_on_exemplar = calloc(img->width * img->height, sizeof(float));
@@ -260,9 +265,13 @@ void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) 
 
 Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHeight , int windowRadius)
 {
+	// allocate memory result output image
 	Image* synimg = AllocateImage(outWidth, outHeight);
+
+	// create gaussian filter
 	initialize_exp_cache(windowRadius);
 
+	// initializes pixel row and column positions for easy access later on
     for (unsigned int row = 0; row < exemplar->height; row++) {
 		for (unsigned int col = 0; col < exemplar->width; col++) {
 			PixelIndex idx = {col, row};
@@ -270,31 +279,35 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
 		}
 	}
 
-	// 800 x 800
-	// (800 x 800) 640,000 x find_unset()
-	// 
-
+	// creates list of unset pixels before entering while loop
 	int_array unset_list = find_unset(exemplar, synimg);
 
-	while (unset_list.size > 0) {
-	 TBSPixel_List TBSPixel_list = create_TBSPixels(synimg,exemplar, outWidth, outHeight, unset_list.data, unset_list.size);
-	 //printf("tbspixel.\n");
-	 
+	while (unset_list.size > 0) { // while there are unset pixels in the output image, this loop sets pixels one at a time
+	 	
+		// find pixels from the unset list that are considered To-Be-Set pixels
+		TBSPixel_List TBSPixel_list = create_TBSPixels(synimg,exemplar, outWidth, outHeight, unset_list.data, unset_list.size);
 
-	 int error = SortTBSPixels(TBSPixel_list.data, TBSPixel_list.size);
-	 if (error) {
-		 del_exp_cache(windowRadius);
-		 return NULL;
-	 }
+		// error handling if SortTBSPixels fails
+	 	int error = SortTBSPixels(TBSPixel_list.data, TBSPixel_list.size);
+		if (error) {
+			del_exp_cache(windowRadius);
+			return NULL;
+	 	}
 
-	 assign_match(exemplar, synimg, (*TBSPixel_list.data).idx.x, (*TBSPixel_list.data).idx.y , windowRadius);
+		// sets a TBS pixel
+	 	assign_match(exemplar, synimg, (*TBSPixel_list.data).idx.x, (*TBSPixel_list.data).idx.y , windowRadius);
 	 
-	 free(TBSPixel_list.data); 
-	 free(unset_list.data);
-	 unset_list = find_unset(exemplar, synimg);
+	 	// free dynamically allocated memory
+		free(TBSPixel_list.data); 
+		free(unset_list.data);
+
+		// reevaluates unset pixel lit after each iteration of the while loop
+		unset_list = find_unset(exemplar, synimg);
+
 	}
 	
+	// frees gaussian filter data
 	del_exp_cache(windowRadius);
+
 	return synimg;
 }
-
