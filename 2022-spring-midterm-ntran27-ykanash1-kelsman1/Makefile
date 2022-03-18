@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc -g
 CFLAGS=-std=c99 -pedantic -Wall -Wextra
 
 project: project.o image.o ppm.o texture_synthesis.o	
