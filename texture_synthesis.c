@@ -20,6 +20,26 @@ typedef struct
 	int* data; 
 	unsigned int size;
 } int_array;
+
+float** exp_cache;
+
+void initialize_exp_cache(int r) {
+	exp_cache = malloc(sizeof(float*) * (2 * r + 1));
+	for (int i = 0; i < 2 * r + 1; i++)
+		exp_cache[i] = malloc(sizeof(float) * (2 * r + 1));
+	
+	const float sigma = ((2.f * r) + 1.f) / 6.4f;
+	for (int row = -r; row <= r; row++)
+		for(int col = -r; col <= r; col++)
+			exp_cache[row + r][col + r] = exp(-(col * col + row * row) / (2.f * sigma * sigma));
+}
+
+void del_exp_cache(int r) {
+	for (int i = 0; i < 2 * r + 1; i++)
+		free(exp_cache[i]);
+	free(exp_cache);
+}
+
 // compares tbs pixels 
 int CompareTBSPixels( const void *v1 , const void *v2 )
 {
@@ -62,7 +82,6 @@ int SortTBSPixels( TBSPixel *tbsPixels , unsigned int sz )
 	return 0;
 }
 
-
 int_array find_unset(const Image *img, Image *synimg) {	
 	int *unset_list = malloc((synimg->height * synimg->width - img->height * img->width) * sizeof(int));	
 	int j = 0;
@@ -74,12 +93,10 @@ int_array find_unset(const Image *img, Image *synimg) {
 		}
 	}
 
-	printf("I am j = %d\n",j);
+	//printf("I am j = %d\n",j);
 	int_array answer = {unset_list, j};
 	return answer;
 }
-
-
 
 bool InBounds_wraper(Image* img, int row, int col) {
 	PixelIndex idx = {col, row};
@@ -114,7 +131,7 @@ TBSPixel_List create_TBSPixels(Image *img, const Image *examplar ,int width, int
 		int row = unset_list[i] / img->width;
 		int col = unset_list[i] % img->width;
 		int neighbors = pixel_neighbors(img, row, col);
-		if (neighbors) {
+		if (neighbors > 0) {
 			TBSPixel temp = { {col, row}, neighbors, 0}; 
 			TBSPixel_list.data[j] = temp;
 			j++;
@@ -129,18 +146,19 @@ bool is_set(const Image *image, int row, int col) {
 }
 
 float compare_windows(Image* synimg, const Image* exemplar, int rowS, int colS, int rowX, int colX, int r) {
+	//const float sigma = ((2.f * r) + 1.f) / 6.4f;
 	float diff = 0;
-	const float sigma = ((2.f * r) + 1.f) / 6.4f;
 	for (int row = -r; row <= r; row++) {
 		for (int col = -r; col <= r; col++) {
 			if (InBounds_wraper(synimg, rowS + row, colS + col) && is_set(synimg, rowS + row, colS + col)) {
 				if (!InBounds_wraper(exemplar, rowX + row, colX + col))
-					return 0;
+					return -1;
 				float d = PixelSquaredDifference(
 					*GetPixel_wraper(synimg,   rowS + row, colS + col),
 					*GetPixel_wraper(exemplar, rowX + row, colX + col)
 				);
-				float s = exp(-(col * col + row * row) / (2.f * sigma * sigma));
+				//float s = exp(-(col * col + row * row) / (2.f * sigma * sigma));
+				float s = exp_cache[row + r][col + r];
 				diff += d * s;
 			}
 		}
@@ -148,37 +166,29 @@ float compare_windows(Image* synimg, const Image* exemplar, int rowS, int colS, 
 	return diff;
 }
 
-/*
-float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX, int width, int height, int r) {
-
-	float sum = 0.0;
-	float sigma = ((2*r)+1)/6.4;
-
-	for (int row = - r; row <  r + 1; row++) {
-		for (int col = - r; col < r + 1; col++) {
-	
-			// check if pixel within TBSPixel window is within the image and set
-			if (colS + col >= 0 && colS + col < width && rowS + row >= 0 && rowS + row < height && 
-							img->pixels[(width * (rowS + row)) + (colS + col)].a != 0) {
-
-				// check if pixel within exemplar pixel window is within image
-				if (colX + col >= 0 && colX + col < width && rowX + row >= 0 &&  rowX + row < height&& 
-							img->pixels[(width * (rowX + row)) + (colX + col)].a != 0) {
-					
-					float d = PixelSquaredDifference(img->pixels[(width * (rowX + row)) + (colX + col)], 
-									img->pixels[((width * (rowS + row)) + (colS + col))]);
-					float s = exp(-(col*col+row*row)/(2*sigma*sigma));
-					sum += d * s;
-
-				}
+float compare_windows_with_heuristic(Image* synimg, const Image* exemplar, int rowS, int colS, int rowX, int colX, int r, float h) {
+	//const float sigma = ((2.f * r) + 1.f) / 6.4f;
+	float diff = 0;
+	for (int row = -r; row <= r; row++) {
+		for (int col = -r; col <= r; col++) {
+			if (InBounds_wraper(synimg, rowS + row, colS + col) && is_set(synimg, rowS + row, colS + col)) {
+				if (!InBounds_wraper(exemplar, rowX + row, colX + col))
+					return -1;
+				float d = PixelSquaredDifference(
+					*GetPixel_wraper(synimg,   rowS + row, colS + col),
+					*GetPixel_wraper(exemplar, rowX + row, colX + col)
+				);
+				//float s = exp(-(col * col + row * row) / (2.f * sigma * sigma));
+				float s = exp_cache[row + r][col + r];
+				diff += d * s;
 			}
 		}
+		if (diff > h)
+			return -1;
 	}
-	return sum;
+	return diff;
 }
-*/
 
-// returns minimum value of a list
 float list_min(float *a, int list_length) {
 	float min = a[0];
 	for (int i = 0; i < list_length; i++)
@@ -195,59 +205,74 @@ int RandomPick(int length) {
 
 void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) {
 
-	float * sum_array = calloc(img->width * img->height, sizeof(float));
-	int i;
-	for (i = 0; i < (int)img->width * (int)img->height; i++) {
+	int * index_on_exemplar = calloc(img->width * img->height, sizeof(float));
+	float * diff_array = calloc(img->width * img->height, sizeof(float));
+	unsigned int diff_array_size = 0;
+
+	int _i = 0;
+	float min;
+
+	for (_i = 0; _i < (int)img->width * (int)img->height && diff_array_size == 0; _i++) {
+		int rowX = _i / img->width;
+		int colX = _i % img->width;
+		float diff = compare_windows(synimg, img, rowS, colS, rowX, colX, r);
+		if (diff >= 0) {
+			index_on_exemplar[diff_array_size] = _i;
+			diff_array[diff_array_size] = diff;
+			diff_array_size++;
+			min = diff;
+		}
+	}
+
+	for (int i = _i; i < (int)img->width * (int)img->height; i++) {
 		int rowX = i / img->width;
 		int colX = i % img->width;
-		*(sum_array + i) = compare_windows(synimg, img, rowS, colS, rowX, colX, r);
-		//*(sum_array + i) = compare_windows(img, colS, rowS, i % img->width, i / img->width, synimg->width, synimg->height, r);
-	
-	}
-
-	float threshold = (1.1)*list_min(sum_array, i);
-
-	int a = 0;
-
-	for (int i = 0; i < (int)img->width * (int)img->height; i++) {
-		if (*(sum_array+i) <= threshold) {
-			a++;
+		float diff = compare_windows_with_heuristic(synimg, img, rowS, colS, rowX, colX, r, min * 1.1);
+		if (diff >= 0) {
+			index_on_exemplar[diff_array_size] = i;
+			diff_array[diff_array_size] = diff;
+			diff_array_size++;
+			if (diff < min)
+				min = diff;
 		}
 	}
 
-	int counter = 0;
-	int good_pixel_values[a];
+	float threshold = 1.1 * min;
+	//float threshold = (1.1)*list_min(diff_array, diff_array_size);
 
-	for (int i = 0; i < (int)img->width * (int)img->height; i++) {
-		
-		if (*(sum_array+i) <= threshold) {
-			
-			good_pixel_values[counter] = i;
-			counter++;
+	int *good_values = malloc(diff_array_size * sizeof(float));
+	int good_values_size = 0;
 
+	for (unsigned int i = 0; i < diff_array_size; i++) {
+		if (diff_array[i] <= threshold) {
+			good_values[good_values_size] = index_on_exemplar[i];
+			good_values_size++;
 		}
 	}
 
-	int rand_good_pixel_idx = good_pixel_values[RandomPick(a)];
-	
+	//printf("good values =%f\n",threshold);
+
+	int rand_good_pixel_idx = good_values[RandomPick(good_values_size)];
+	//printf("match: %d / %d\n", rand_good_pixel_idx, img->width * img->height);
 	SetPixel(synimg, rowS, colS, img->pixels + rand_good_pixel_idx);
-
 }
 
 
 Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHeight , int windowRadius)
 {
-	Image* synimg = NULL;
-	
-    synimg = AllocateImage( outWidth , outHeight);
+	Image* synimg = AllocateImage(outWidth, outHeight);
+	initialize_exp_cache(windowRadius);
 
     for (unsigned int row = 0; row < exemplar->height; row++) {
 		for (unsigned int col = 0; col < exemplar->width; col++) {
 			PixelIndex idx = {col, row};
 			SetPixel(synimg, row, col, GetConstPixel(exemplar, idx));
-
 		}
 	}
+
+	// 800 x 800
+	// (800 x 800) 640,000 x find_unset()
+	// 
 
 	int_array unset_list = find_unset(exemplar, synimg);
 
@@ -257,19 +282,19 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
 	 
 
 	 int error = SortTBSPixels(TBSPixel_list.data, TBSPixel_list.size);
-	 //printf("sortpixels.\n");
 	 if (error) {
+		 del_exp_cache(windowRadius);
 		 return NULL;
 	 }
 
-	 assign_match(exemplar, synimg, (*TBSPixel_list.data).idx.x,(*TBSPixel_list.data).idx.y , windowRadius);
-	 //printf("assign.\n");	
+	 assign_match(exemplar, synimg, (*TBSPixel_list.data).idx.x, (*TBSPixel_list.data).idx.y , windowRadius);
 	 
 	 free(TBSPixel_list.data); 
 	 free(unset_list.data);
 	 unset_list = find_unset(exemplar, synimg);
-	}	
+	}
 	
+	del_exp_cache(windowRadius);
 	return synimg;
 }
 
