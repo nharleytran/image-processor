@@ -15,6 +15,8 @@ typedef struct
 	unsigned int r;
 } TBSPixel;
 
+
+
 /** A function that compares two TBSPixels and returns a negative number if the first should come earlier in the sort order and a positive number if it should come later*/
 int CompareTBSPixels( const void *v1 , const void *v2 );
 
@@ -23,21 +25,23 @@ int SortTBSPixels( TBSPixel *tbsPixels , unsigned int sz );
 
 
 // Find all unset pixels, which have alpha channel = 0
-int * find_unset(const Image *img, Image *synimg);
+//int * find_unset(const Image *img, Image *synimg);
 
 // Determines if the unset pixel has any set neighbors. 
 // If so, creates a TBSPixel object for that pixel.
 //TBSPixel * create_TBSPixels(Image *img, int width, int height, int *unset_list);
-TBSPixel *create_TBSPixels(Image *img,const Image *examplar ,int width, int height, int *unset_list);
-float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX, int width, int height, int r);
+//TBSPixel *create_TBSPixels(Image *img,const Image *examplar ,int width, int height, int *unset_list);
 
-float list_min(float *a, int list_length);
+//TBSPixel_List create_TBSPixels(Image *img, const Image *examplar ,int width, int height, int *unset_list);
+// float compare_windows(const Image * img, int colS, int rowS, int colX, int rowX, int width, int height, int r);
 
-int RandomPick(int length);
+// float list_min(float *a, int list_length);
 
-void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r);
+// int RandomPick(int length);
 
-bool are_you_fill(int * unset);
+// void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r);
+
+//bool are_you_fill(int * unset);
 
 
 
