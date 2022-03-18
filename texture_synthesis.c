@@ -99,12 +99,12 @@ int_array find_unset(const Image *img, Image *synimg) {
 	return answer;
 }
 
-bool InBounds_wraper(Image* img, int row, int col) {
+bool InBounds_wraper(const Image* img, int row, int col) {
 	PixelIndex idx = {col, row};
 	return InBounds(img, idx);
 }
 
-Pixel* GetPixel_wraper(Image* img, int row, int col) {
+Pixel* GetPixel_wraper(const Image* img, int row, int col) {
 	PixelIndex idx = {col, row};
 	return GetPixel(img, idx);
 }
@@ -125,7 +125,7 @@ int pixel_neighbors(Image *img, int row, int col) {
 
 // Determines if the unset pixel has any set neighbors.
 // If so, creates a TBSPixel object for that pixel.
-TBSPixel_List create_TBSPixels(Image *img, const Image *examplar ,int width, int height, int *unset_list, const int unset_list_size) {
+TBSPixel_List create_TBSPixels(Image *img, int width, int height, int *unset_list, const int unset_list_size) {
 	TBSPixel_List TBSPixel_list = {(TBSPixel *) malloc(sizeof(TBSPixel) * (width + height)), 0};
 	int j = 0;
 	for (int i = 0; i < unset_list_size; i++) {
@@ -170,6 +170,8 @@ float compare_windows(Image* synimg, const Image* exemplar, int rowS, int colS, 
 	return diff;
 }
 
+// returns value of comparison accuracy between TBS pixel window and exemplar pixel window
+// smaller value = more accurate
 float compare_windows_with_heuristic(Image* synimg, const Image* exemplar, int rowS, int colS, int rowX, int colX, int r, float h) {
 	//const float sigma = ((2.f * r) + 1.f) / 6.4f;
 	float diff = 0;
@@ -285,7 +287,7 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
 	while (unset_list.size > 0) { // while there are unset pixels in the output image, this loop sets pixels one at a time
 	 	
 		// find pixels from the unset list that are considered To-Be-Set pixels
-		TBSPixel_List TBSPixel_list = create_TBSPixels(synimg,exemplar, outWidth, outHeight, unset_list.data, unset_list.size);
+		TBSPixel_List TBSPixel_list = create_TBSPixels(synimg, outWidth, outHeight, unset_list.data, unset_list.size);
 
 		// error handling if SortTBSPixels fails
 	 	int error = SortTBSPixels(TBSPixel_list.data, TBSPixel_list.size);

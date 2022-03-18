@@ -64,7 +64,7 @@ double PixelSquaredDifference( Pixel p1 , Pixel p2 );
 bool InBounds( const Image *image , PixelIndex idx );
 
 /** A function returning a pointer to the pixel described by the index (or the NULL pointer if the index is out of bounds)*/
-Pixel *GetPixel( Image *image , PixelIndex idx );
+Pixel *GetPixel( const Image *image , PixelIndex idx );
 
 
 /** A function returning a const pointer to the pixel described by the index (or the NULL pointer if the index is out of bounds)*/

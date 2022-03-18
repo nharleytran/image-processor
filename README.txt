@@ -10,6 +10,6 @@ Name: Harley Tran
 JHED: ntran27
 Hopkins ID: B94A1F
 
-Name:
-JHED:
-Hopkins ID:
+Name: Yensabro Kanashiro
+JHED: ykanash1
+Hopkins ID: 81E2FE

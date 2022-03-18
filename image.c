@@ -17,7 +17,7 @@ bool InBounds( const Image *image , PixelIndex idx )
 	return idx.x<image->width && idx.y<image->height;
 }
 
-Pixel *GetPixel( Image *image , PixelIndex idx )
+Pixel *GetPixel( const Image *image , PixelIndex idx )
 {
 	if( !InBounds( image , idx ) )
 	{
