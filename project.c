@@ -29,7 +29,7 @@ int main( int argc , char *argv[] )
 		return 2;
 	}
 
-    const Image* img = ReadPPM(in);
+    Image* img = ReadPPM(in);
 	if (img == NULL) { // error catch
 		printf("Error reaing PPM file\n");
 		return 3;
@@ -56,6 +56,9 @@ int main( int argc , char *argv[] )
 
     WritePPM(out,synimg);
     fclose(out);
+
+	free(img);
+	free(synimg);
 
 	// Get the time at the end of the execution
 	clock_t clock_difference = clock() - start_clock;
