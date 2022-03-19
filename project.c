@@ -50,13 +50,18 @@ int main( int argc , char *argv[] )
 	fclose(in);
     FILE *out = fopen(argv[2],"wb");
 	if (out == NULL) { // error catch
-		printf("Error writing output file\n");
+		printf("Error opening output file\n");
 		return 4;
 	}
 
-    WritePPM(out,synimg);
+    int error_check = WritePPM(out,synimg);
+	if (error_check == -1) { // error catch
+		printf("Error writing output ppm file\n");
+		return 4;
+	}
     fclose(out);
 
+	// free images
 	free(img);
 	free(synimg);
 
