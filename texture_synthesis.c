@@ -96,6 +96,7 @@ int_array find_unset(const Image *img, Image *synimg) {
 
 	//printf("I am j = %d\n",j);
 	int_array answer = {unset_list, j};
+	//free(unset_list);
 	return answer;
 }
 
@@ -260,6 +261,10 @@ void assign_match(const Image * img, Image * synimg, int colS, int rowS, int r) 
 	//printf("good values =%f\n",threshold);
 
 	int rand_good_pixel_idx = good_values[RandomPick(good_values_size)];
+
+	free(index_on_exemplar);
+	free(diff_array);
+	free(good_values);
 	//printf("match: %d / %d\n", rand_good_pixel_idx, img->width * img->height);
 	SetPixel(synimg, rowS, colS, img->pixels + rand_good_pixel_idx);
 }
