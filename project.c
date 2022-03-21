@@ -62,6 +62,8 @@ int main( int argc , char *argv[] )
     fclose(out);
 
 	// free images
+	free(img->pixels);
+	free(synimg->pixels);
 	free(img);
 	free(synimg);
 

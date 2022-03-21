@@ -89,14 +89,13 @@ int_array find_unset(const Image *img, Image *synimg) {
 	
 	for (unsigned int i = 0; i < synimg->height * synimg->width; i++) {
 		if (synimg->pixels[i].a == 0) {
-			unset_list[j] = i;	
+			unset_list[j] = (int) i;
 			j++;
 		}
 	}
 
 	//printf("I am j = %d\n",j);
 	int_array answer = {unset_list, j};
-	//free(unset_list);
 	return answer;
 }
 
@@ -312,6 +311,9 @@ Image *SynthesizeFromExemplar( const Image *exemplar , int outWidth , int outHei
 		unset_list = find_unset(exemplar, synimg);
 
 	}
+
+	// free list of unset pixels
+	free(unset_list.data);
 	
 	// frees gaussian filter data
 	del_exp_cache(windowRadius);

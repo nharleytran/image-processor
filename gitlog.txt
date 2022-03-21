@@ -1,3 +1,9 @@
+commit 5f39414606ebe005249d2a983cc6786d060cb0ed
+Author: Kenneth Elsman <98336240+Kenneth-E@users.noreply.github.com>
+Date:   Mon Mar 21 11:38:25 2022 -0400
+
+    freed some memory
+
 commit 52cf9e096c01e03198183835200a64db9a03cc5f
 Author: Kenneth Elsman <98336240+Kenneth-E@users.noreply.github.com>
 Date:   Sat Mar 19 12:12:41 2022 -0400
