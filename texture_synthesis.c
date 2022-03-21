@@ -84,7 +84,7 @@ int SortTBSPixels( TBSPixel *tbsPixels , unsigned int sz )
 }
 
 int_array find_unset(const Image *img, Image *synimg) {	
-	int *unset_list = malloc((synimg->height * synimg->width - img->height * img->width) * sizeof(int));	
+	int *unset_list = calloc((synimg->height * synimg->width - img->height * img->width), sizeof(int));	
 	int j = 0;
 	
 	for (unsigned int i = 0; i < synimg->height * synimg->width; i++) {
